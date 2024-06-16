@@ -23,6 +23,8 @@ const GameLife = () => {
         cellules[i][j] = 0
       }
     }
+
+    setCellules([...cellules])
   }
 
   const newSeed = () => {
@@ -36,6 +38,10 @@ const GameLife = () => {
     }
 
     setCellules([...newCellules])
+  }
+
+  const clear = () => {
+    initiation()
   }
 
   const moduloWidth = (x: number) => {
@@ -143,6 +149,10 @@ const GameLife = () => {
                 <div
                   key={j}
                   style={{ width: `${sizeCell}px`, height: `${sizeCell}px` }}
+                  onClick={() => {
+                    cellules[i][j] = cellules[i][j] === 0 ? 1 : 0
+                    setCellules([...cellules])
+                  }}
                   className={`border-2 border-black ${
                     cellule === 0 ? 'bg-white' : 'bg-black'
                   }`}
@@ -189,6 +199,9 @@ const GameLife = () => {
           </button>
           <button className="btn" onClick={() => newSeed()}>
             New seed
+          </button>
+          <button className="btn" onClick={() => clear()}>
+            Clear
           </button>
         </div>
 
