@@ -23,3 +23,27 @@ export const Pause = () => {
     />
   )
 }
+
+export const Expand = () => {
+  return (
+    <Image
+      src="/expand.svg"
+      alt="expand"
+      width={24}
+      height={24}
+      className="invert"
+    />
+  )
+}
+
+export const Collapse = () => {
+  return (
+    <Image
+      src="/collapse.svg"
+      alt="collapse"
+      width={24}
+      height={24}
+      className="invert"
+    />
+  )
+}

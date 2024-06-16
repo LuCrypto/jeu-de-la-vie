@@ -1,19 +1,20 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
-import { Pause, Play } from './icons'
+import { Collapse, Expand, Pause, Play } from './icons'
 
 const GameLife = () => {
-  const [widthArray, setWidthArray] = useState(20)
-  const [heightArray, setHeightArray] = useState(20)
-  const [sizeCell, setSizeCell] = useState(20)
+  const [widthArray, setWidthArray] = useState<number>(20)
+  const [heightArray, setHeightArray] = useState<number>(20)
+  const [sizeCell, setSizeCell] = useState<number>(20)
 
   const [cellules, setCellules] = useState<number[][]>([])
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
-  const [isRunning, setIsRunning] = useState(false)
+  const [isRunning, setIsRunning] = useState<boolean>(false)
 
-  const [speed, setSpeed] = useState(250)
+  const [speed, setSpeed] = useState<number>(250)
+  const [open, setOpen] = useState<boolean>(false)
 
   const initiation = () => {
     for (let i = 0; i < widthArray; i++) {
@@ -30,7 +31,6 @@ const GameLife = () => {
     for (let i = 0; i < widthArray; i++) {
       newCellules[i] = []
       for (let j = 0; j < heightArray; j++) {
-        // generate random between 0 and 1
         newCellules[i][j] = Math.floor(Math.random() * 2)
       }
     }
@@ -132,43 +132,70 @@ const GameLife = () => {
   }, [widthArray, heightArray])
 
   return (
-    <div className="flex flex-col items-center">
-      <h1 className="text-4xl font-bold">Jeu de la vie</h1>
-      <div className="flex flex-col space-y-2 m-5">
-        {cellules.map((ligne, i) => (
-          <div className="flex space-x-2" key={i}>
-            {ligne.map((cellule, j) => (
-              <div
-                key={j}
-                style={{ width: `${sizeCell}px`, height: `${sizeCell}px` }}
-                className={`border-2 border-black ${
-                  cellule === 0 ? 'bg-white' : 'bg-black'
-                }`}
-              ></div>
-            ))}
-          </div>
-        ))}
+    <div className="flex h-full">
+      {/* Grille de jeu */}
+      <div className="flex-grow">
+        <h1 className="text-4xl font-bold">Jeu de la vie</h1>
+        <div className="flex flex-col space-y-2 m-5">
+          {cellules.map((ligne, i) => (
+            <div className="flex space-x-2" key={i}>
+              {ligne.map((cellule, j) => (
+                <div
+                  key={j}
+                  style={{ width: `${sizeCell}px`, height: `${sizeCell}px` }}
+                  className={`border-2 border-black ${
+                    cellule === 0 ? 'bg-white' : 'bg-black'
+                  }`}
+                ></div>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="flex justify-between gap-2 w-1/2">
-        <div className="flex flex-col gap-2">
-          <button
-            className="btn btn-primary text-white"
-            onClick={() => {
-              if (!isRunning) {
-                evolutionGlobal()
-                run()
-              } else {
-                pause()
-              }
-            }}
-          >
-            <span>Evolution</span>
-            {!isRunning ? <Play /> : <Pause />}
+
+      <button
+        onClick={() => {
+          setOpen(!open)
+        }}
+        className="mb-4 p-2 bg-blue-500 text-white rounded-l-lg absolute right-0 z-10"
+      >
+        {open ? <Expand /> : <Collapse />}
+      </button>
+
+      {/* Panneau de configuration */}
+      <div
+        className={`mt-4 p-4 shadow-lg fixed right-0 top-0 bg-white ${
+          !open ? 'w-1/4' : 'w-0 p-0'
+        }`}
+      >
+        <button
+          className="btn btn-primary text-white"
+          onClick={() => {
+            if (!isRunning) {
+              evolutionGlobal()
+              run()
+            } else {
+              pause()
+            }
+          }}
+        >
+          <span>Evolution</span>
+          {!isRunning ? <Play /> : <Pause />}
+        </button>
+
+        <div className="flex gap-2 my-4">
+          <button className="btn" onClick={() => evolutionGlobal()}>
+            One Step
           </button>
+          <button className="btn" onClick={() => newSeed()}>
+            New seed
+          </button>
+        </div>
 
-          <h2 className="text-2xl font-bold">Configuration</h2>
-
-          <div className="flex flex-col gap-2">
+        <h2 className="text-2xl font-bold">Configuration</h2>
+        <div className="flex flex-col gap-2">
+          <label className="flex items-center gap-2">
+            <span className="mx-1">Vitesse :</span>
             <input
               type="range"
               min="100"
@@ -177,54 +204,47 @@ const GameLife = () => {
               onChange={(e) => setSpeed(Number(e.target.value))}
               disabled={isRunning}
             />
-            <span>Speed : {speed} ms</span>
-          </div>
+            <span>{speed} ms</span>
+          </label>
 
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-col gap-2">
-              <input
-                type="range"
-                min="10"
-                max="100"
-                value={widthArray}
-                onChange={(e) => setWidthArray(Number(e.target.value))}
-                disabled={isRunning}
-              />
-              <span>Width : {widthArray}</span>
-            </div>
-            <div className="flex flex-col gap-2">
-              <input
-                type="range"
-                min="10"
-                max="100"
-                value={heightArray}
-                onChange={(e) => setHeightArray(Number(e.target.value))}
-                disabled={isRunning}
-              />
-              <span>Height : {heightArray}</span>
-            </div>
+          <label className="flex items-center gap-2">
+            <span className="mx-1">Largeur :</span>
+            <input
+              type="range"
+              min="10"
+              max="100"
+              value={heightArray}
+              onChange={(e) => setHeightArray(Number(e.target.value))}
+              disabled={isRunning}
+            />
+            <span>{heightArray} px</span>
+          </label>
 
-            <div className="flex flex-col gap-2">
-              <input
-                type="range"
-                min="10"
-                max="100"
-                value={sizeCell}
-                onChange={(e) => setSizeCell(Number(e.target.value))}
-                disabled={isRunning}
-              />
-              <span>Size cell : {sizeCell}px</span>
-            </div>
-          </div>
-        </div>
+          <label className="flex items-center gap-2">
+            <span className="mx-1">Hauteur :</span>
+            <input
+              type="range"
+              min="10"
+              max="100"
+              value={widthArray}
+              onChange={(e) => setWidthArray(Number(e.target.value))}
+              disabled={isRunning}
+            />
+            <span>{widthArray} px</span>
+          </label>
 
-        <div className="flex gap-2">
-          <button className="btn" onClick={() => evolutionGlobal()}>
-            One Step
-          </button>
-          <button className="btn" onClick={() => newSeed()}>
-            New seed
-          </button>
+          <label className="flex items-center gap-2">
+            <span className="mx-1">Taille des cellules :</span>
+            <input
+              type="range"
+              min="10"
+              max="100"
+              value={sizeCell}
+              onChange={(e) => setSizeCell(Number(e.target.value))}
+              disabled={isRunning}
+            />
+            <span>{sizeCell}px</span>
+          </label>
         </div>
       </div>
     </div>
