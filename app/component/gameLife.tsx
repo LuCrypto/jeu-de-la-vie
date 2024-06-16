@@ -11,6 +11,8 @@ const GameLife = () => {
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const [isRunning, setIsRunning] = useState(false)
 
+  const [speed, setSpeed] = useState(250)
+
   const initiation = () => {
     for (let i = 0; i < sizeArray; i++) {
       cellules[i] = []
@@ -101,7 +103,7 @@ const GameLife = () => {
   const run = () => {
     intervalRef.current = setInterval(() => {
       evolutionGlobal()
-    }, 250)
+    }, speed)
     setIsRunning(true)
   }
 
@@ -135,27 +137,42 @@ const GameLife = () => {
           </div>
         ))}
       </div>
-      <div className="flex gap-2">
-        <button
-          className="btn btn-primary text-white"
-          onClick={() => {
-            if (!isRunning) {
-              evolutionGlobal()
-              run()
-            } else {
-              pause()
-            }
-          }}
-        >
-          <span>Evolution</span>
-          {!isRunning ? <Play /> : <Pause />}
-        </button>
-        <button className="btn" onClick={() => evolutionGlobal()}>
-          One Step
-        </button>
-        <button className="btn" onClick={() => newSeed()}>
-          New seed
-        </button>
+      <div className="flex justify-between gap-2">
+        <div>
+          <button
+            className="btn btn-primary text-white"
+            onClick={() => {
+              if (!isRunning) {
+                evolutionGlobal()
+                run()
+              } else {
+                pause()
+              }
+            }}
+          >
+            <span>Evolution</span>
+            {!isRunning ? <Play /> : <Pause />}
+          </button>
+          <div className="flex flex-col">
+            <input
+              type="range"
+              min="100"
+              max="1000"
+              value={speed}
+              onChange={(e) => setSpeed(Number(e.target.value))}
+            />
+            <span>Speed : {speed} ms</span>
+          </div>
+        </div>
+
+        <div>
+          <button className="btn" onClick={() => evolutionGlobal()}>
+            One Step
+          </button>
+          <button className="btn" onClick={() => newSeed()}>
+            New seed
+          </button>
+        </div>
       </div>
     </div>
   )
