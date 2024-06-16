@@ -1,11 +1,15 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { Pause, Play } from './icons'
 
 const GameLife = () => {
   const sizeArray: number = 20
 
   const [cellules, setCellules] = useState<number[][]>([])
+
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const [isRunning, setIsRunning] = useState(false)
 
   const initiation = () => {
     for (let i = 0; i < sizeArray; i++) {
@@ -27,7 +31,7 @@ const GameLife = () => {
       }
     }
 
-    setCellules(newCellules)
+    setCellules([...newCellules])
   }
 
   const moduloSize = (x: number) => {
@@ -80,22 +84,33 @@ const GameLife = () => {
   }
 
   const evolutionGlobal = () => {
-    const newCellules: number[][] = []
+    setCellules((prevCellules) => {
+      const newCellules: number[][] = []
 
-    for (let i = 0; i < sizeArray; i++) {
-      newCellules[i] = []
-      for (let j = 0; j < sizeArray; j++) {
-        newCellules[i][j] = cellules[i][j]
+      for (let i = 0; i < sizeArray; i++) {
+        newCellules[i] = []
+        for (let j = 0; j < sizeArray; j++) {
+          newCellules[i][j] = evolutionCell(prevCellules, i, j)
+        }
       }
-    }
 
-    for (let i = 0; i < sizeArray; i++) {
-      for (let j = 0; j < sizeArray; j++) {
-        newCellules[i][j] = evolutionCell(cellules, i, j)
-      }
-    }
+      return newCellules
+    })
+  }
 
-    setCellules(newCellules)
+  const run = () => {
+    intervalRef.current = setInterval(() => {
+      evolutionGlobal()
+    }, 250)
+    setIsRunning(true)
+  }
+
+  const pause = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
+    setIsRunning(false)
   }
 
   useEffect(() => {
@@ -123,9 +138,20 @@ const GameLife = () => {
       <div className="flex gap-2">
         <button
           className="btn btn-primary text-white"
-          onClick={() => evolutionGlobal()}
+          onClick={() => {
+            if (!isRunning) {
+              evolutionGlobal()
+              run()
+            } else {
+              pause()
+            }
+          }}
         >
-          Evolution
+          <span>Evolution</span>
+          {!isRunning ? <Play /> : <Pause />}
+        </button>
+        <button className="btn" onClick={() => evolutionGlobal()}>
+          One Step
         </button>
         <button className="btn" onClick={() => newSeed()}>
           New seed
