@@ -144,9 +144,9 @@ const GameLife = () => {
       {/* Grille de jeu */}
       <div className="flex-grow">
         <h1 className="text-4xl font-bold">Jeu de la vie</h1>
-        <div className={`flex flex-col space-y-[${distance}px] m-5`}>
+        <div className={`flex flex-col space-y-2 m-5`}>
           {cellules.map((ligne, i) => (
-            <div className={`flex space-x-[${distance}px]`} key={i}>
+            <div className={`flex space-x-2`} key={i}>
               {ligne.map((cellule, j) => (
                 <div
                   key={j}
@@ -261,7 +261,7 @@ const GameLife = () => {
             <span>{sizeCell}px</span>
           </label>
 
-          <label className="flex items-center gap-2">
+          {/* <label className="flex items-center gap-2">
             <span className="mx-1">Distance :</span>
             <input
               type="range"
@@ -272,7 +272,7 @@ const GameLife = () => {
               disabled={isRunning}
             />
             <span>{distance}px</span>
-          </label>
+          </label> */}
         </div>
       </div>
     </div>
