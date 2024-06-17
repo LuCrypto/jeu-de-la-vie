@@ -16,6 +16,8 @@ const GameLife = () => {
   const [speed, setSpeed] = useState<number>(250)
   const [open, setOpen] = useState<boolean>(false)
 
+  const [distance, setDistance] = useState<number>(8)
+
   const initiation = () => {
     for (let i = 0; i < widthArray; i++) {
       cellules[i] = []
@@ -142,9 +144,9 @@ const GameLife = () => {
       {/* Grille de jeu */}
       <div className="flex-grow">
         <h1 className="text-4xl font-bold">Jeu de la vie</h1>
-        <div className="flex flex-col space-y-2 m-5">
+        <div className={`flex flex-col space-y-[${distance}px] m-5`}>
           {cellules.map((ligne, i) => (
-            <div className="flex space-x-2" key={i}>
+            <div className={`flex space-x-[${distance}px]`} key={i}>
               {ligne.map((cellule, j) => (
                 <div
                   key={j}
@@ -257,6 +259,19 @@ const GameLife = () => {
               disabled={isRunning}
             />
             <span>{sizeCell}px</span>
+          </label>
+
+          <label className="flex items-center gap-2">
+            <span className="mx-1">Distance :</span>
+            <input
+              type="range"
+              min="1"
+              max="10"
+              value={distance}
+              onChange={(e) => setDistance(Number(e.target.value))}
+              disabled={isRunning}
+            />
+            <span>{distance}px</span>
           </label>
         </div>
       </div>
