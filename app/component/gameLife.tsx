@@ -19,6 +19,8 @@ const GameLife = () => {
   const historiqueCellules = useRef<number[][][]>([])
   const indexHistorique = useRef<number>(0)
 
+  const [modeWall, setModeWall] = useState<boolean>(false)
+
   const initiation = () => {
     for (let i = 0; i < widthArray; i++) {
       cellules[i] = []
@@ -28,10 +30,6 @@ const GameLife = () => {
     }
 
     setCellules([...cellules])
-    // Supprimer tout ce qu'il y a après indexHistorique dans le tableau historiqueCellules
-    // historiqueCellules.current.splice(indexHistorique.current + 1)
-    // historiqueCellules.current.push([...cellules])
-    // indexHistorique.current = historiqueCellules.current.length - 1
   }
 
   const newSeed = () => {
@@ -45,9 +43,6 @@ const GameLife = () => {
     }
 
     setCellules([...newCellules])
-    // historiqueCellules.current.splice(indexHistorique.current + 1)
-    // historiqueCellules.current.push([...newCellules])
-    // indexHistorique.current = historiqueCellules.current.length - 1
   }
 
   const clear = () => {
@@ -112,8 +107,6 @@ const GameLife = () => {
       historiqueCellules.current.push([...cellules])
     }
 
-    console.log('evolutionGlobal')
-
     setCellules((prevCellules) => {
       const newCellules: number[][] = []
 
@@ -123,8 +116,6 @@ const GameLife = () => {
           newCellules[i][j] = evolutionCell(prevCellules, i, j)
         }
       }
-
-      console.log('salut : ', historiqueCellules.current.length)
 
       if (
         !historiqueCellules.current[
@@ -142,11 +133,6 @@ const GameLife = () => {
 
       return newCellules
     })
-
-    // historiqueCellules.current.splice(indexHistorique.current + 1)
-    // historiqueCellules.current.push([...cellules])
-    // indexHistorique.current = historiqueCellules.current.length - 1
-    // console.log('taille : ', historiqueCellules.current.length)
   }
 
   const run = () => {
@@ -164,17 +150,14 @@ const GameLife = () => {
     setIsRunning(false)
   }
 
-  const arriere = () => {
-    console.log('historiqueCellules : ', historiqueCellules)
-    console.log('indexHistorique : ', indexHistorique.current)
+  const arriereHistorique = () => {
     if (indexHistorique.current > 0) {
-      console.log('cible : ', indexHistorique.current - 1)
       setCellules([...historiqueCellules.current[indexHistorique.current - 1]])
       indexHistorique.current--
     }
   }
 
-  const avant = () => {
+  const avantHistorique = () => {
     if (indexHistorique.current < historiqueCellules.current.length - 1) {
       setCellules(historiqueCellules.current[indexHistorique.current + 1])
       indexHistorique.current++
@@ -204,11 +187,19 @@ const GameLife = () => {
                   key={j}
                   style={{ width: `${sizeCell}px`, height: `${sizeCell}px` }}
                   onClick={() => {
-                    cellules[i][j] = cellules[i][j] === 0 ? 1 : 0
+                    if (modeWall) {
+                      cellules[i][j] = -1
+                    } else {
+                      cellules[i][j] = cellules[i][j] === 0 ? 1 : 0
+                    }
                     setCellules([...cellules])
                   }}
                   className={`border-2 border-black ${
-                    cellule === 0 ? 'bg-white' : 'bg-black'
+                    cellule === 0
+                      ? 'bg-white'
+                      : cellule === 1
+                      ? 'bg-black'
+                      : 'bg-red-500'
                   }`}
                 ></div>
               ))}
@@ -249,7 +240,7 @@ const GameLife = () => {
           </button>
           <button
             className="btn"
-            onClick={() => avant()}
+            onClick={() => avantHistorique()}
             style={{
               opacity:
                 indexHistorique.current ===
@@ -269,7 +260,7 @@ const GameLife = () => {
 
           <button
             className="btn"
-            onClick={() => arriere()}
+            onClick={() => arriereHistorique()}
             disabled={indexHistorique.current === 0}
             style={{
               opacity: indexHistorique.current === 0 ? 0.3 : 1,
@@ -290,6 +281,23 @@ const GameLife = () => {
             Clear
           </button>
         </div>
+
+        <div className="form-control my-4 flex items-start gap-2">
+          <label className="label cursor-pointer flex gap-2">
+            <span className="label-text">Mode WALL</span>
+            <input
+              type="checkbox"
+              className="toggle"
+              onChange={(e) => setModeWall(e.target.checked)}
+            />
+          </label>
+        </div>
+
+        {modeWall && (
+          <p className="text-sm text-gray-500 my-4">
+            You can now create walls (like dead cells) by clicking on the cells
+          </p>
+        )}
 
         <h2 className="text-2xl font-bold">Configuration</h2>
         <div className="flex flex-col gap-2">
