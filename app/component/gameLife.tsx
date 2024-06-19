@@ -21,6 +21,9 @@ const GameLife = () => {
 
   const [modeWall, setModeWall] = useState<boolean>(false)
 
+  const [row, setRow] = useState<boolean>(false)
+  const [column, setColumn] = useState<boolean>(false)
+
   const initiation = () => {
     for (let i = 0; i < widthArray; i++) {
       cellules[i] = []
@@ -209,6 +212,17 @@ const GameLife = () => {
                   onClick={() => {
                     if (modeWall) {
                       cellules[i][j] = cellules[i][j] === -1 ? 0 : -1
+
+                      if (row) {
+                        for (let k = 0; k < widthArray; k++) {
+                          cellules[i][k] = -1
+                        }
+                      }
+                      if (column) {
+                        for (let k = 0; k < heightArray; k++) {
+                          cellules[k][j] = -1
+                        }
+                      }
                     } else if (cellules[i][j] !== -1) {
                       cellules[i][j] = cellules[i][j] === 0 ? 1 : 0
                     }
@@ -312,6 +326,29 @@ const GameLife = () => {
             />
           </label>
         </div>
+
+        {modeWall && (
+          <div className="flex flex-col gap-2">
+            <label htmlFor="wall" className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="wall"
+                className="checkbox"
+                onChange={(e) => setRow(e.target.checked)}
+              />
+              <span className="label-text">Row</span>
+            </label>
+            <label htmlFor="wall" className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="wall"
+                className="checkbox"
+                onChange={(e) => setColumn(e.target.checked)}
+              />
+              <span className="label-text">Column</span>
+            </label>
+          </div>
+        )}
 
         {modeWall && (
           <p className="text-sm text-gray-500 my-4">
