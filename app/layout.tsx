@@ -17,9 +17,9 @@ export default function RootLayout({
 }>) {
   return (
     <html className="h-min-full w-min-full" data-theme="light" lang="en">
-      <body className={`${inter.className} min-h-full`}>
+      <body className={`${inter.className} h-screen`}>
         {children}
-        <p className="text-center text-sm text-gray-500 mb-6 pb-6">
+        <p className="fixed bottom-0 left-0 right-0 text-center text-sm text-gray-500 pb-6">
           Made with ❤️ by{' '}
           <a className="text-blue-500" href="https://x.com/LuCryptoFR">
             LuCrypto
