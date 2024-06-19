@@ -70,21 +70,41 @@ const GameLife = () => {
     // 1, 1
 
     let somme =
-      array[moduloWidth(i - 1)][moduloHeight(j - 1)] +
-      array[moduloWidth(i - 1)][moduloHeight(j)] +
-      array[moduloWidth(i - 1)][moduloHeight(j + 1)] +
-      array[moduloWidth(i)][moduloHeight(j - 1)] +
-      array[moduloWidth(i)][moduloHeight(j + 1)] +
-      array[moduloWidth(i + 1)][moduloHeight(j - 1)] +
-      array[moduloWidth(i + 1)][moduloHeight(j)] +
-      array[moduloWidth(i + 1)][moduloHeight(j + 1)]
+      (array[moduloWidth(i - 1)][moduloHeight(j - 1)] === -1
+        ? 0
+        : array[moduloWidth(i - 1)][moduloHeight(j - 1)]) +
+      (array[moduloWidth(i - 1)][moduloHeight(j)] === -1
+        ? 0
+        : array[moduloWidth(i - 1)][moduloHeight(j)]) +
+      (array[moduloWidth(i - 1)][moduloHeight(j + 1)] === -1
+        ? 0
+        : array[moduloWidth(i - 1)][moduloHeight(j + 1)]) +
+      (array[moduloWidth(i)][moduloHeight(j - 1)] === -1
+        ? 0
+        : array[moduloWidth(i)][moduloHeight(j - 1)]) +
+      (array[moduloWidth(i)][moduloHeight(j + 1)] === -1
+        ? 0
+        : array[moduloWidth(i)][moduloHeight(j + 1)]) +
+      (array[moduloWidth(i + 1)][moduloHeight(j - 1)] === -1
+        ? 0
+        : array[moduloWidth(i + 1)][moduloHeight(j - 1)]) +
+      (array[moduloWidth(i + 1)][moduloHeight(j)] === -1
+        ? 0
+        : array[moduloWidth(i + 1)][moduloHeight(j)]) +
+      (array[moduloWidth(i + 1)][moduloHeight(j + 1)] === -1
+        ? 0
+        : array[moduloWidth(i + 1)][moduloHeight(j + 1)])
 
     return somme
   }
 
   const evolutionCell = (array: number[][], i: number, j: number) => {
+    if (array[i][j] === -1) {
+      return -1
+    }
+
     let cellLiving: boolean = false
-    if (array[i][j]) {
+    if (array[i][j] === 1) {
       cellLiving = true
     }
 
@@ -188,8 +208,8 @@ const GameLife = () => {
                   style={{ width: `${sizeCell}px`, height: `${sizeCell}px` }}
                   onClick={() => {
                     if (modeWall) {
-                      cellules[i][j] = -1
-                    } else {
+                      cellules[i][j] = cellules[i][j] === -1 ? 0 : -1
+                    } else if (cellules[i][j] !== -1) {
                       cellules[i][j] = cellules[i][j] === 0 ? 1 : 0
                     }
                     setCellules([...cellules])
