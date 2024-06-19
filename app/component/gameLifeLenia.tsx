@@ -187,7 +187,7 @@ const GameLifeLenia = () => {
 
       {/* Panneau de configuration */}
       <div
-        className={`mt-4 p-4 shadow-lg fixed right-0 top-1/2 bg-white ${
+        className={`mt-4 p-4 shadow-lg fixed right-0 top-0 bg-white ${
           !open ? 'w-1/4' : 'w-0 p-0'
         }`}
       >
