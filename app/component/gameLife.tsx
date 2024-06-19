@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
-import { Collapse, Expand, Pause, Play } from './icons'
+import React, { useDebugValue, useEffect, useRef, useState } from 'react'
+import { Arrow, ArrowRight, Collapse, Expand, Pause, Play } from './icons'
 
 const GameLife = () => {
   const [widthArray, setWidthArray] = useState<number>(20)
@@ -16,7 +16,8 @@ const GameLife = () => {
   const [speed, setSpeed] = useState<number>(250)
   const [open, setOpen] = useState<boolean>(false)
 
-  const [distance, setDistance] = useState<number>(8)
+  const historiqueCellules = useRef<number[][][]>([])
+  const indexHistorique = useRef<number>(0)
 
   const initiation = () => {
     for (let i = 0; i < widthArray; i++) {
@@ -27,6 +28,10 @@ const GameLife = () => {
     }
 
     setCellules([...cellules])
+    // Supprimer tout ce qu'il y a après indexHistorique dans le tableau historiqueCellules
+    // historiqueCellules.current.splice(indexHistorique.current + 1)
+    // historiqueCellules.current.push([...cellules])
+    // indexHistorique.current = historiqueCellules.current.length - 1
   }
 
   const newSeed = () => {
@@ -40,6 +45,9 @@ const GameLife = () => {
     }
 
     setCellules([...newCellules])
+    // historiqueCellules.current.splice(indexHistorique.current + 1)
+    // historiqueCellules.current.push([...newCellules])
+    // indexHistorique.current = historiqueCellules.current.length - 1
   }
 
   const clear = () => {
@@ -100,6 +108,12 @@ const GameLife = () => {
   }
 
   const evolutionGlobal = () => {
+    if (historiqueCellules.current.length === 0) {
+      historiqueCellules.current.push([...cellules])
+    }
+
+    console.log('evolutionGlobal')
+
     setCellules((prevCellules) => {
       const newCellules: number[][] = []
 
@@ -110,8 +124,29 @@ const GameLife = () => {
         }
       }
 
+      console.log('salut : ', historiqueCellules.current.length)
+
+      if (
+        !historiqueCellules.current[
+          historiqueCellules.current.length - 1
+        ].every((row, rowIndex) =>
+          row.every(
+            (cell, cellIndex) => cell === newCellules[rowIndex][cellIndex]
+          )
+        )
+      ) {
+        historiqueCellules.current.splice(indexHistorique.current + 1)
+        historiqueCellules.current.push([...newCellules])
+        indexHistorique.current = historiqueCellules.current.length - 1
+      }
+
       return newCellules
     })
+
+    // historiqueCellules.current.splice(indexHistorique.current + 1)
+    // historiqueCellules.current.push([...cellules])
+    // indexHistorique.current = historiqueCellules.current.length - 1
+    // console.log('taille : ', historiqueCellules.current.length)
   }
 
   const run = () => {
@@ -127,6 +162,23 @@ const GameLife = () => {
       intervalRef.current = null
     }
     setIsRunning(false)
+  }
+
+  const arriere = () => {
+    console.log('historiqueCellules : ', historiqueCellules)
+    console.log('indexHistorique : ', indexHistorique.current)
+    if (indexHistorique.current > 0) {
+      console.log('cible : ', indexHistorique.current - 1)
+      setCellules([...historiqueCellules.current[indexHistorique.current - 1]])
+      indexHistorique.current--
+    }
+  }
+
+  const avant = () => {
+    if (indexHistorique.current < historiqueCellules.current.length - 1) {
+      setCellules(historiqueCellules.current[indexHistorique.current + 1])
+      indexHistorique.current++
+    }
   }
 
   useEffect(() => {
@@ -180,20 +232,52 @@ const GameLife = () => {
           !open ? 'w-1/4' : 'w-0 p-0'
         }`}
       >
-        <button
-          className="btn btn-primary text-white"
-          onClick={() => {
-            if (!isRunning) {
-              evolutionGlobal()
-              run()
-            } else {
-              pause()
+        <div className="flex gap-1">
+          <button
+            className="btn btn-primary text-white mr-4"
+            onClick={() => {
+              if (!isRunning) {
+                evolutionGlobal()
+                run()
+              } else {
+                pause()
+              }
+            }}
+          >
+            <span>Evolution</span>
+            {!isRunning ? <Play /> : <Pause />}
+          </button>
+          <button
+            className="btn"
+            onClick={() => avant()}
+            style={{
+              opacity:
+                indexHistorique.current ===
+                  historiqueCellules.current.length - 1 ||
+                historiqueCellules.current.length === 0
+                  ? 0.3
+                  : 1,
+            }}
+            disabled={
+              indexHistorique.current ===
+                historiqueCellules.current.length - 1 ||
+              historiqueCellules.current.length === 0
             }
-          }}
-        >
-          <span>Evolution</span>
-          {!isRunning ? <Play /> : <Pause />}
-        </button>
+          >
+            <Arrow />
+          </button>
+
+          <button
+            className="btn"
+            onClick={() => arriere()}
+            disabled={indexHistorique.current === 0}
+            style={{
+              opacity: indexHistorique.current === 0 ? 0.3 : 1,
+            }}
+          >
+            <ArrowRight />
+          </button>
+        </div>
 
         <div className="flex gap-2 my-4">
           <button className="btn" onClick={() => evolutionGlobal()}>
@@ -260,19 +344,6 @@ const GameLife = () => {
             />
             <span>{sizeCell}px</span>
           </label>
-
-          {/* <label className="flex items-center gap-2">
-            <span className="mx-1">Distance :</span>
-            <input
-              type="range"
-              min="1"
-              max="10"
-              value={distance}
-              onChange={(e) => setDistance(Number(e.target.value))}
-              disabled={isRunning}
-            />
-            <span>{distance}px</span>
-          </label> */}
         </div>
       </div>
     </div>

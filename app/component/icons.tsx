@@ -47,3 +47,19 @@ export const Collapse = () => {
     />
   )
 }
+
+export const Arrow = () => {
+  return <Image src="/arrow.png" alt="arrow" width={24} height={24} />
+}
+
+export const ArrowRight = () => {
+  return (
+    <Image
+      src="/arrow.png"
+      alt="arrow"
+      style={{ transform: 'scaleX(-1)' }}
+      width={24}
+      height={24}
+    />
+  )
+}
