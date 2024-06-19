@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Collapse, Expand, Pause, Play } from './icons'
 
-const GameLife = () => {
+const GameLifeLenia = () => {
   const [widthArray, setWidthArray] = useState<number>(20)
   const [heightArray, setHeightArray] = useState<number>(20)
   const [sizeCell, setSizeCell] = useState<number>(20)
@@ -16,29 +16,25 @@ const GameLife = () => {
   const [speed, setSpeed] = useState<number>(250)
   const [open, setOpen] = useState<boolean>(false)
 
-  const [distance, setDistance] = useState<number>(8)
-
   const initiation = () => {
-    for (let i = 0; i < widthArray; i++) {
-      cellules[i] = []
-      for (let j = 0; j < heightArray; j++) {
-        cellules[i][j] = 0
-      }
-    }
-
-    setCellules([...cellules])
-  }
-
-  const newSeed = () => {
-    let newCellules: number[][] = []
-
+    const newCellules: number[][] = []
     for (let i = 0; i < widthArray; i++) {
       newCellules[i] = []
       for (let j = 0; j < heightArray; j++) {
-        newCellules[i][j] = Math.floor(Math.random() * 2)
+        newCellules[i][j] = 0
       }
     }
+    setCellules([...newCellules])
+  }
 
+  const newSeed = () => {
+    const newCellules: number[][] = []
+    for (let i = 0; i < widthArray; i++) {
+      newCellules[i] = []
+      for (let j = 0; j < heightArray; j++) {
+        newCellules[i][j] = Math.random()
+      }
+    }
     setCellules([...newCellules])
   }
 
@@ -79,24 +75,41 @@ const GameLife = () => {
     return somme
   }
 
-  const evolutionCell = (array: number[][], i: number, j: number) => {
-    let cellLiving: boolean = false
-    if (array[i][j]) {
-      cellLiving = true
+  const growthRate = (sum: number): number => {
+    const mu = 0.5 // moyenne 3.0
+    const sigma = 0.15 // écart-type 1.0
+    return Math.exp(-Math.pow(sum - mu, 2) / (2 * Math.pow(sigma, 2))) - 0.5
+  }
+
+  // Cette fonction calcule la nouvelle valeur de la cellule en fonction de la moyenne des valeurs des cellules voisines
+  const evolutionCellContinu = (array: number[][], i: number, j: number) => {
+    let cellLiving: boolean = array[i][j] > 0
+    let totalWeight = 0
+    let totalValue = 0
+
+    // Définir un rayon pour le filtrage en anneau
+    const radius = 1.5
+    const step = 0.5
+
+    for (let dx = -radius; dx <= radius; dx += step) {
+      for (let dy = -radius; dy <= radius; dy += step) {
+        if (dx * dx + dy * dy <= radius * radius) {
+          const neighborX = moduloWidth(Math.floor(i + dx))
+          const neighborY = moduloHeight(Math.floor(j + dy))
+          // console.log('neighborX : ', neighborX)
+          // console.log('neighborY : ', neighborY)
+          const weight = 1 - Math.sqrt(dx * dx + dy * dy) / radius
+          totalWeight += weight
+          totalValue += array[neighborX][neighborY] * weight
+        }
+      }
     }
 
-    let numberNeighbors = countNeighbors(array, i, j)
+    const averageValue = totalValue / totalWeight
+    const growth = growthRate(averageValue)
 
-    if (cellLiving) {
-      if (numberNeighbors === 2 || numberNeighbors === 3) {
-        return 1
-      }
-    } else {
-      if (numberNeighbors === 3) {
-        return 1
-      }
-    }
-    return 0
+    // Limiter les valeurs des cellules entre 0 et 1
+    return Math.max(0, Math.min(1, array[i][j] + growth))
   }
 
   const evolutionGlobal = () => {
@@ -106,7 +119,7 @@ const GameLife = () => {
       for (let i = 0; i < widthArray; i++) {
         newCellules[i] = []
         for (let j = 0; j < heightArray; j++) {
-          newCellules[i][j] = evolutionCell(prevCellules, i, j)
+          newCellules[i][j] = evolutionCellContinu(prevCellules, i, j)
         }
       }
 
@@ -143,21 +156,19 @@ const GameLife = () => {
     <div className="flex h-full">
       {/* Grille de jeu */}
       <div className="flex-grow">
-        <h1 className="text-4xl font-bold">Jeu de la vie</h1>
+        <h1 className="text-4xl font-bold">Jeu de la vie (Lenia)</h1>
         <div className={`flex flex-col space-y-1 m-5`}>
           {cellules.map((ligne, i) => (
             <div className={`flex space-x-1`} key={i}>
               {ligne.map((cellule, j) => (
                 <div
                   key={j}
-                  style={{ width: `${sizeCell}px`, height: `${sizeCell}px` }}
-                  onClick={() => {
-                    cellules[i][j] = cellules[i][j] === 0 ? 1 : 0
-                    setCellules([...cellules])
+                  style={{
+                    width: `${sizeCell}px`,
+                    height: `${sizeCell}px`,
+                    backgroundColor: `rgba(0, 0, 0, ${cellule})`,
                   }}
-                  className={`border-2 border-black ${
-                    cellule === 0 ? 'bg-white' : 'bg-black'
-                  }`}
+                  className="border-2 border-black"
                 ></div>
               ))}
             </div>
@@ -176,7 +187,7 @@ const GameLife = () => {
 
       {/* Panneau de configuration */}
       <div
-        className={`mt-4 p-4 shadow-lg fixed right-0 top-0 bg-white ${
+        className={`mt-4 p-4 shadow-lg fixed right-0 top-1/2 bg-white ${
           !open ? 'w-1/4' : 'w-0 p-0'
         }`}
       >
@@ -207,7 +218,7 @@ const GameLife = () => {
           </button>
         </div>
 
-        <h2 className="text-2xl font-bold">Configuration</h2>
+        <h2 className="text-2xl font-bold">Configuration (Lenia)</h2>
         <div className="flex flex-col gap-2">
           <label className="flex items-center gap-2">
             <span className="mx-1">Vitesse :</span>
@@ -260,23 +271,10 @@ const GameLife = () => {
             />
             <span>{sizeCell}px</span>
           </label>
-
-          {/* <label className="flex items-center gap-2">
-            <span className="mx-1">Distance :</span>
-            <input
-              type="range"
-              min="1"
-              max="10"
-              value={distance}
-              onChange={(e) => setDistance(Number(e.target.value))}
-              disabled={isRunning}
-            />
-            <span>{distance}px</span>
-          </label> */}
         </div>
       </div>
     </div>
   )
 }
 
-export default GameLife
+export default GameLifeLenia
