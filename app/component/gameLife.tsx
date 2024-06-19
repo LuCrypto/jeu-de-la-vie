@@ -24,6 +24,8 @@ const GameLife = () => {
   const [row, setRow] = useState<boolean>(false)
   const [column, setColumn] = useState<boolean>(false)
 
+  const [borderActive, setBorderActive] = useState<boolean>(false)
+
   const initiation = () => {
     for (let i = 0; i < widthArray; i++) {
       cellules[i] = []
@@ -202,13 +204,17 @@ const GameLife = () => {
       {/* Grille de jeu */}
       <div className="flex-grow">
         <h1 className="text-4xl font-bold">Jeu de la vie</h1>
-        <div className={`flex flex-col space-y-1 m-5`}>
+        <div className={`flex flex-col m-5`}>
           {cellules.map((ligne, i) => (
-            <div className={`flex space-x-1`} key={i}>
+            <div className={`flex`} key={i}>
               {ligne.map((cellule, j) => (
                 <div
                   key={j}
-                  style={{ width: `${sizeCell}px`, height: `${sizeCell}px` }}
+                  style={{
+                    width: `${sizeCell}px`,
+                    height: `${sizeCell}px`,
+                    border: borderActive ? '1px solid black' : 'none',
+                  }}
                   onClick={() => {
                     if (modeWall) {
                       cellules[i][j] = cellules[i][j] === -1 ? 0 : -1
@@ -228,7 +234,7 @@ const GameLife = () => {
                     }
                     setCellules([...cellules])
                   }}
-                  className={`border-2 border-black ${
+                  className={`${
                     cellule === 0
                       ? 'bg-white'
                       : cellule === 1
@@ -325,6 +331,15 @@ const GameLife = () => {
               onChange={(e) => setModeWall(e.target.checked)}
             />
           </label>
+
+          <label className="label cursor-pointer flex gap-2">
+            <span className="label-text">Border</span>
+            <input
+              type="checkbox"
+              className="toggle"
+              onChange={(e) => setBorderActive(e.target.checked)}
+            />
+          </label>
         </div>
 
         {modeWall && (
@@ -362,7 +377,7 @@ const GameLife = () => {
             <span className="mx-1">Vitesse :</span>
             <input
               type="range"
-              min="100"
+              min="25"
               max="1000"
               value={speed}
               onChange={(e) => setSpeed(Number(e.target.value))}
@@ -401,7 +416,7 @@ const GameLife = () => {
             <span className="mx-1">Taille des cellules :</span>
             <input
               type="range"
-              min="10"
+              min="5"
               max="100"
               value={sizeCell}
               onChange={(e) => setSizeCell(Number(e.target.value))}
