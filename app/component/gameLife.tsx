@@ -490,10 +490,10 @@ const GameLife = () => {
         </div>
 
         <h2 className="text-2xl font-bold mt-2">Template de cellules</h2>
-        <div className="flex flex-col gap-1">
-          <div>
+        <div className="flex flex-col">
+          <div className="flex">
             <details className="dropdown">
-              <summary className="m-1 btn">
+              <summary className="m-1 btn btn-xs text-xs">
                 {filterSize === null
                   ? 'Petit/Moyen/Grand'
                   : convertirCellSize(filterSize)}
@@ -521,7 +521,7 @@ const GameLife = () => {
             </details>
 
             <details className="dropdown">
-              <summary className="m-1 btn">
+              <summary className="m-1 btn btn-xs text-xs">
                 {filterType === null
                   ? 'Vaisseau/Oscillateur/Stable/Canon/Special'
                   : convertirCellType(filterType)}
@@ -590,6 +590,12 @@ const GameLife = () => {
                               cell === 1
                                 ? template.type === CellType.Oscillateur
                                   ? 'orange'
+                                  : template.type === CellType.Special
+                                  ? 'purple'
+                                  : template.type === CellType.Stable
+                                  ? 'green'
+                                  : template.type === CellType.Canon
+                                  ? 'blue'
                                   : 'black'
                                 : 'white',
                           }}
