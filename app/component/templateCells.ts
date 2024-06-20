@@ -73,6 +73,26 @@ export const TemplateCells: TemplateCell[] = [
     size: CellSize.Moyen,
     type: CellType.Oscillateur,
     cells: [
+      [0, 0, 0, 0, 0],
+      [0, 1, 1, 1, 0],
+      [0, 0, 0, 0, 0],
+    ],
+  },
+  {
+    size: CellSize.Moyen,
+    type: CellType.Oscillateur,
+    cells: [
+      [0, 0, 0],
+      [0, 1, 0],
+      [0, 1, 0],
+      [0, 1, 0],
+      [0, 0, 0],
+    ],
+  },
+  {
+    size: CellSize.Moyen,
+    type: CellType.Oscillateur,
+    cells: [
       [0, 0, 0, 0, 0, 0],
       [0, 0, 1, 1, 1, 0],
       [0, 1, 1, 1, 0, 0],
@@ -89,6 +109,18 @@ export const TemplateCells: TemplateCell[] = [
       [0, 1, 1, 0, 0, 0],
       [0, 1, 1, 0, 0, 0],
       [0, 0, 0, 0, 0, 0],
+    ],
+  },
+  {
+    size: CellSize.Moyen,
+    type: CellType.Oscillateur,
+    cells: [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+      [0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0],
+      [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ],
   },
   {
@@ -125,6 +157,30 @@ export const TemplateCells: TemplateCell[] = [
       [0, 0, 1, 1, 1, 1, 0, 0],
       [0, 0, 0, 1, 1, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0],
+    ],
+  },
+  {
+    size: CellSize.Moyen,
+    type: CellType.Special,
+    cells: [
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 1, 1, 0],
+      [0, 0, 0, 0, 1, 0],
+      [0, 1, 1, 1, 0, 0],
+      [0, 1, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+    ],
+  },
+  {
+    size: CellSize.Moyen,
+    type: CellType.Special,
+    cells: [
+      [0, 0, 0, 0, 0, 0],
+      [0, 1, 1, 0, 0, 0],
+      [0, 1, 0, 0, 0, 0],
+      [0, 0, 1, 1, 1, 0],
+      [0, 0, 0, 0, 1, 0],
+      [0, 0, 0, 0, 0, 0],
     ],
   },
   {

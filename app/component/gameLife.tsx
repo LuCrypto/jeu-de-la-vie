@@ -586,7 +586,12 @@ const GameLife = () => {
                           style={{
                             width: '10px',
                             height: '10px',
-                            backgroundColor: cell === 1 ? 'black' : 'white',
+                            backgroundColor:
+                              cell === 1
+                                ? template.type === CellType.Oscillateur
+                                  ? 'orange'
+                                  : 'black'
+                                : 'white',
                           }}
                         ></div>
                       ))}
