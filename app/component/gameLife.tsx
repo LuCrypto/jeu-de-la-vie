@@ -2,6 +2,14 @@
 
 import React, { useDebugValue, useEffect, useRef, useState } from 'react'
 import { Arrow, ArrowRight, Collapse, Expand, Pause, Play } from './icons'
+import {
+  CellSize,
+  CellType,
+  convertirCellSize,
+  convertirCellType,
+  TemplateCell,
+  TemplateCells,
+} from './templateCells'
 
 const GameLife = () => {
   const [widthArray, setWidthArray] = useState<number>(20)
@@ -25,6 +33,15 @@ const GameLife = () => {
   const [column, setColumn] = useState<boolean>(false)
 
   const [borderActive, setBorderActive] = useState<boolean>(false)
+
+  const [filterSize, setFilterSize] = useState<CellSize | null>(null)
+  const [filterType, setFilterType] = useState<CellType | null>(null)
+  const [templateSelected, setTemplateSelected] = useState<TemplateCell | null>(
+    null
+  )
+
+  const [templateDisplay, setTemplateDisplay] =
+    useState<TemplateCell[]>(TemplateCells)
 
   const initiation = () => {
     for (let i = 0; i < widthArray; i++) {
@@ -199,6 +216,29 @@ const GameLife = () => {
     newSeed()
   }, [widthArray, heightArray])
 
+  useEffect(() => {
+    console.log('filterSize : ', filterSize)
+    console.log('filterType : ', filterType)
+    if (filterSize !== null && filterType !== null) {
+      setTemplateDisplay(
+        TemplateCells.filter(
+          (template) =>
+            template.size === filterSize && template.type === filterType
+        )
+      )
+    } else if (filterSize !== null) {
+      setTemplateDisplay(
+        TemplateCells.filter((template) => template.size === filterSize)
+      )
+    } else if (filterType !== null) {
+      setTemplateDisplay(
+        TemplateCells.filter((template) => template.type === filterType)
+      )
+    } else {
+      setTemplateDisplay(TemplateCells)
+    }
+  }, [filterSize, filterType, templateSelected])
+
   return (
     <div className="flex h-full">
       {/* Grille de jeu */}
@@ -216,7 +256,7 @@ const GameLife = () => {
                     border: borderActive ? '1px solid black' : 'none',
                   }}
                   onClick={() => {
-                    if (modeWall) {
+                    if (modeWall && !templateSelected) {
                       cellules[i][j] = cellules[i][j] === -1 ? 0 : -1
 
                       if (row) {
@@ -231,6 +271,29 @@ const GameLife = () => {
                       }
                     } else if (cellules[i][j] !== -1) {
                       cellules[i][j] = cellules[i][j] === 0 ? 1 : 0
+                    }
+
+                    if (templateSelected) {
+                      const demiHauteurTemplate = Math.floor(
+                        templateSelected.cells.length / 2
+                      )
+                      const demiLargeurTemplate = Math.floor(
+                        templateSelected.cells[0].length / 2
+                      )
+                      const debutI = i - demiHauteurTemplate
+                      const debutJ = j - demiLargeurTemplate
+
+                      for (let m = 0; m < templateSelected.cells.length; m++) {
+                        for (
+                          let n = 0;
+                          n < templateSelected.cells[m].length;
+                          n++
+                        ) {
+                          const x = moduloHeight(debutI + m)
+                          const y = moduloWidth(debutJ + n)
+                          cellules[x][y] = templateSelected.cells[m][n]
+                        }
+                      }
                     }
                     setCellules([...cellules])
                   }}
@@ -424,6 +487,115 @@ const GameLife = () => {
             />
             <span>{sizeCell}px</span>
           </label>
+        </div>
+
+        <h2 className="text-2xl font-bold mt-2">Template de cellules</h2>
+        <div className="flex flex-col gap-1">
+          <div>
+            <details className="dropdown">
+              <summary className="m-1 btn">
+                {filterSize === null
+                  ? 'Petit/Moyen/Grand'
+                  : convertirCellSize(filterSize)}
+              </summary>
+              <ul className="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
+                <li>
+                  <span onClick={() => setFilterSize(null)}>Toutes</span>
+                </li>
+                <li>
+                  <span onClick={() => setFilterSize(CellSize.Petit)}>
+                    Petit
+                  </span>
+                </li>
+                <li>
+                  <span onClick={() => setFilterSize(CellSize.Moyen)}>
+                    Moyen
+                  </span>
+                </li>
+                <li>
+                  <span onClick={() => setFilterSize(CellSize.Grand)}>
+                    Grand
+                  </span>
+                </li>
+              </ul>
+            </details>
+
+            <details className="dropdown">
+              <summary className="m-1 btn">
+                {filterType === null
+                  ? 'Vaisseau/Oscillateur/Stable/Canon/Special'
+                  : convertirCellType(filterType)}
+              </summary>
+              <ul className="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
+                <li>
+                  <span onClick={() => setFilterType(null)}>Toutes</span>
+                </li>
+                <li>
+                  <span onClick={() => setFilterType(CellType.Vaisseau)}>
+                    Vaisseau
+                  </span>
+                </li>
+                <li>
+                  <span onClick={() => setFilterType(CellType.Oscillateur)}>
+                    Oscillateur
+                  </span>
+                </li>
+                <li>
+                  <span onClick={() => setFilterType(CellType.Stable)}>
+                    Stable
+                  </span>
+                </li>
+                <li>
+                  <span onClick={() => setFilterType(CellType.Canon)}>
+                    Canon
+                  </span>
+                </li>
+                <li>
+                  <span onClick={() => setFilterType(CellType.Special)}>
+                    Special
+                  </span>
+                </li>
+              </ul>
+            </details>
+          </div>
+
+          {/* Liste des templates */}
+          <div className="flex flex-wrap gap-2 overflow-auto">
+            {templateDisplay.map((template: TemplateCell, index: number) => (
+              <div
+                key={index}
+                onClick={() => {
+                  if (templateSelected === template) {
+                    setTemplateSelected(null)
+                  } else {
+                    setTemplateSelected(template)
+                  }
+                }}
+                className={`${
+                  templateSelected === template
+                    ? 'border-2 border-blue-500'
+                    : ''
+                }`}
+              >
+                <div className="flex flex-col mb-2">
+                  {template.cells.map((row, rowIndex) => (
+                    <div key={rowIndex} className="flex">
+                      {row.map((cell, cellIndex) => (
+                        <div
+                          key={cellIndex}
+                          style={{
+                            width: '10px',
+                            height: '10px',
+                            backgroundColor: cell === 1 ? 'black' : 'white',
+                          }}
+                        ></div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
