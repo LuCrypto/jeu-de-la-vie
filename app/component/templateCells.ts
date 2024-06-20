@@ -149,7 +149,7 @@ export const TemplateCells: TemplateCell[] = [
   },
   {
     size: CellSize.Moyen,
-    type: CellType.Stable,
+    type: CellType.Vaisseau,
     cells: [
       [0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 1, 1, 0, 0],

@@ -393,7 +393,37 @@ const GameLife = () => {
               className="toggle"
               onChange={(e) => setModeWall(e.target.checked)}
             />
+
+            {modeWall && (
+              <div className="flex gap-2">
+                <label htmlFor="wall" className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="wall"
+                    className="checkbox"
+                    onChange={(e) => setRow(e.target.checked)}
+                  />
+                  <span className="label-text">Row</span>
+                </label>
+                <label htmlFor="wall" className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="wall"
+                    className="checkbox"
+                    onChange={(e) => setColumn(e.target.checked)}
+                  />
+                  <span className="label-text">Column</span>
+                </label>
+              </div>
+            )}
           </label>
+
+          {modeWall && (
+            <p className="text-sm text-gray-500">
+              You can now create walls (like dead cells) by clicking on the
+              cells
+            </p>
+          )}
 
           <label className="label cursor-pointer flex gap-2">
             <span className="label-text">Border</span>
@@ -404,35 +434,6 @@ const GameLife = () => {
             />
           </label>
         </div>
-
-        {modeWall && (
-          <div className="flex flex-col gap-2">
-            <label htmlFor="wall" className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="wall"
-                className="checkbox"
-                onChange={(e) => setRow(e.target.checked)}
-              />
-              <span className="label-text">Row</span>
-            </label>
-            <label htmlFor="wall" className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="wall"
-                className="checkbox"
-                onChange={(e) => setColumn(e.target.checked)}
-              />
-              <span className="label-text">Column</span>
-            </label>
-          </div>
-        )}
-
-        {modeWall && (
-          <p className="text-sm text-gray-500 my-4">
-            You can now create walls (like dead cells) by clicking on the cells
-          </p>
-        )}
 
         <h2 className="text-2xl font-bold">Configuration</h2>
         <div className="flex flex-col gap-2">
@@ -531,27 +532,42 @@ const GameLife = () => {
                   <span onClick={() => setFilterType(null)}>Toutes</span>
                 </li>
                 <li>
-                  <span onClick={() => setFilterType(CellType.Vaisseau)}>
+                  <span
+                    onClick={() => setFilterType(CellType.Vaisseau)}
+                    className="text-red-500"
+                  >
                     Vaisseau
                   </span>
                 </li>
                 <li>
-                  <span onClick={() => setFilterType(CellType.Oscillateur)}>
+                  <span
+                    onClick={() => setFilterType(CellType.Oscillateur)}
+                    className="text-orange-500"
+                  >
                     Oscillateur
                   </span>
                 </li>
                 <li>
-                  <span onClick={() => setFilterType(CellType.Stable)}>
+                  <span
+                    onClick={() => setFilterType(CellType.Stable)}
+                    className="text-green-500"
+                  >
                     Stable
                   </span>
                 </li>
                 <li>
-                  <span onClick={() => setFilterType(CellType.Canon)}>
+                  <span
+                    onClick={() => setFilterType(CellType.Canon)}
+                    className="text-blue-500"
+                  >
                     Canon
                   </span>
                 </li>
                 <li>
-                  <span onClick={() => setFilterType(CellType.Special)}>
+                  <span
+                    onClick={() => setFilterType(CellType.Special)}
+                    className="text-purple-500"
+                  >
                     Special
                   </span>
                 </li>
@@ -596,6 +612,8 @@ const GameLife = () => {
                                   ? 'green'
                                   : template.type === CellType.Canon
                                   ? 'blue'
+                                  : template.type === CellType.Vaisseau
+                                  ? 'red'
                                   : 'black'
                                 : 'white',
                           }}
